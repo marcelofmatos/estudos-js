@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <style>
+
+            * {
+                font-size: 16px;
+            }
+            .caixa {
+                border: 1px solid gray;
+                width: 20%;
+                padding: 3px;
+                margin: 10% auto;
+            }
+
+            label,p {
+                display: block;
+                padding: 1em;
+            }
+
+            input {
+                width: 4em;
+            }
+
+            button {
+                
+            }
+            button span {
+                display: block;
+                font-size: 2em;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="caixa">
+            <label>CampoA: <input id="CampoA" type="number" /></label>
+            <label>CampoB: <input id="CampoB" type="number" /></label>
+            <p>
+                <button onclick="soma()">
+                    <span>➕</span> Soma
+                </button>
+                <button onclick="subtrai()">
+                    <span>➖</span> Subtrai
+                </button>
+                <button onclick="multiplica()">
+                    <span>✖</span> Multiplica
+                </button>
+                <button onclick="divide()">
+                    <span>➗</span> Divide
+                </button>
+            </p>
+            <label>Resultado: <input id="Resultado" /></label>
+        </div>
+        <script>
+
+            function soma() {
+                A = parseInt(CampoA.value)
+                B = parseInt(CampoB.value)
+                Resultado.value = A + B
+            }
+
+            function subtrai() {
+                A = parseInt(CampoA.value)
+                B = parseInt(CampoB.value)
+                Resultado.value = A - B
+            }
+
+            function multiplica() {
+                A = parseInt(CampoA.value)
+                B = parseInt(CampoB.value)
+                Resultado.value = A * B
+            }
+
+            function divide() {
+                A = parseInt(CampoA.value)
+                B = parseInt(CampoB.value)
+                Resultado.value = A / B
+            }
+        </script>
+    </body>
+</html>
