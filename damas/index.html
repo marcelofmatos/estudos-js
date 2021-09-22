@@ -1,0 +1,180 @@
+
+<html>
+<head>
+	<link rel="stylesheet" href="estilo.css" type="text/css"/>
+	<meta charset="utf-8"/>
+</head>
+<body onload="MontarTabuleiro()">
+	<div id="tabuleiro">
+	</div>
+	<div id="info">
+		<ul>
+			<li>Pontuação pretas:<span id="info_pontos_pretas"/></li>
+			<li>Pontuação brancas:<span id="info_pontos_brancas"/></li>
+			<li>Casa selecionada: <span id="info_casa_selecionada"/></li>
+			<li>Peça selecionada: <span id="info_peca_selecionada"/></li>
+		</ul>
+	</div>
+	<div id="mensagem"></div>
+</body>
+</html>
+<script>
+
+// https://www.devmedia.com.br/desenhando-um-tabuleiro-de-damas-em-html-css-js/24591
+// https://www.devmedia.com.br/jogo-de-damas-em-html-movendo-as-pecas/24608
+
+var casa_selecionada = null;
+var peca_selecionada = null;
+//Novas variáveis para armazenar a pontuação
+var pontos_pretas = 0;
+var pontos_brancas = 0;
+
+function clickCasa(event) {
+	var aI, aJ, nI, nJ, dI, dJ;
+	var casa_anterior, peca_anterior;
+	if(event.type == 'drop') {
+		event.preventDefault()
+		event.target.style.opacity = 1
+	}
+	if(peca_selecionada != null){
+		aI = parseInt(casa_selecionada.substr(5, 1));
+		aJ = parseInt(casa_selecionada.substr(7, 1));
+		nI = parseInt(this.id.substr(5, 1));
+		nJ = parseInt(this.id.substr(7, 1));
+
+		dI = parseInt(((aI - nI) < 0?(aI - nI)*(-1):(aI - nI)));
+		dJ = parseInt(((aJ - nJ) < 0?(aJ - nJ)*(-1):(aJ - nJ)));
+	}
+
+	if(casa_selecionada) {
+		document.querySelector("#"+casa_selecionada).classList.remove("casa_selecionada");
+	}
+	casa_anterior = casa_selecionada;
+	peca_anterior = peca_selecionada;
+	casa_selecionada = this.id;
+	document.querySelector("#"+casa_selecionada).classList.add("casa_selecionada");
+	if(casa_selecionada) {
+		try {
+			peca_selecionada = document.querySelector("#"+casa_selecionada).querySelector("img").id;
+		} catch {
+			peca_selecionada = null
+		}
+	}
+
+	if(peca_selecionada==null){
+		window.info_peca_selecionada.innerText = ("NENHUMA PEÇA SELECIONADA");
+		if(peca_anterior != null){
+			if (
+				((peca_anterior.match(/preta/)) && (nI > aI)) 
+				||
+				((peca_anterior.match(/branca/)) && (nI < aI))
+			){
+				let peca = document.querySelector(`#${casa_anterior} .peca`);
+				if((dI == 1) && (dJ == 1)){
+					document.querySelector("#"+casa_selecionada).appendChild(peca);
+					document.querySelector(`#${casa_anterior} #${peca_anterior}`).remove();
+				} else if((dI == 2) && (dJ == 2)){
+					if(peca_anterior.match(/branca/)) {
+						var casa_meio = null, peca_meio = null;
+						if(nJ < aJ){
+							casa_meio = "#casa_"+(nI+1).toString()+"_"+(nJ+1).toString();
+
+						}else{
+							casa_meio = "#casa_"+(nI+1).toString()+"_"+(nJ-1).toString();
+						}
+						if(document.querySelector(casa_meio).children.length > 0)
+						peca_meio = document.querySelector(casa_meio).querySelector('.peca');
+
+						if(peca_meio != null && peca_meio.id.match(/preta/)){
+							peca_meio.remove();
+							pontos_brancas++;
+							document.querySelector("#info_pontos_brancas").innerText = (pontos_brancas.toString());
+							document.querySelector("#"+casa_selecionada).appendChild(peca);
+							document.querySelector(`#${casa_anterior} #${peca_anterior}`).remove();
+						}
+					} else if(peca_anterior.match(/preta/))	{
+						var casa_meio = null, peca_meio = null;
+						if(nJ < aJ){
+							casa_meio = "#casa_"+(nI-1).toString()+"_"+(nJ+1).toString();
+
+						}else{
+							casa_meio = "#casa_"+(nI-1).toString()+"_"+(nJ-1).toString();
+						}
+						if(document.querySelector(casa_meio).children.length > 0)
+						peca_meio = document.querySelector(casa_meio).querySelector('.peca');
+						if(peca_meio != null && peca_meio.id.match(/branca/)){
+							peca_meio.remove();
+							pontos_pretas++;
+							document.querySelector("#info_pontos_pretas").innerText = (pontos_pretas.toString());
+							document.querySelector(`#${casa_anterior} #${peca_anterior}`).remove();
+							document.querySelector("#"+casa_selecionada).appendChild(peca);
+						}
+					}
+				}
+			}
+		}
+	}
+	else{
+		info_peca_selecionada.innerText = (peca_selecionada.toString());
+	}
+
+
+	if(pontos_pretas == 12){
+		window.mensagem.innerHTML = "<h1>Vitória das pretas!</h1>";
+	}
+
+	if(pontos_brancas == 12){
+		window.mensagem.innerHTML = "<h1>Vitória das brancas!</h1>";
+	}
+}
+
+function MontarTabuleiro(){
+	var i;
+	for (i=0; i<8; i++){
+		document.querySelector("#tabuleiro").insertAdjacentHTML("beforeend","<div id='linha_"+i.toString()+"' class='linha' >");
+
+		for (j=0; j<8; j++){
+			var nome_casa ="casa_"+i.toString()+"_"+j.toString();
+			var classe = (i%2==0?(j%2==0?"casa_branca":"casa_preta"):(j%2!=0?"casa_branca":"casa_preta"));
+			document.querySelector("#linha_"+i.toString()).insertAdjacentHTML("beforeend","<div id='"+nome_casa+"' class='casa "+classe+"' />");
+
+			if(classe == "casa_preta"){
+				if(i < 3){
+					document.querySelector(`#${nome_casa}`).insertAdjacentHTML("beforeend","<img src='peca_preta.png' class='peca' id='"+nome_casa.replace("casa", "peca_preta")+"'/>");
+				}
+				else
+				if(i > 4){
+					document.querySelector(`#${nome_casa}`).insertAdjacentHTML("beforeend","<img src='peca_branca.png' class='peca' id='"+nome_casa.replace("casa", "peca_branca")+"'/>");
+				}
+
+			}
+		}
+	}
+
+	document.querySelectorAll(".casa").forEach(e => e.addEventListener("click", function(){
+		// if(casa_selecionada && document.querySelector("#"+casa_selecionada)) {
+		// 	document.querySelector("#"+casa_selecionada).classList.remove("casa_selecionada");
+		// }
+		// casa_selecionada = this.id;
+		// document.querySelector("#"+casa_selecionada).classList.add("casa_selecionada");
+		// document.querySelector("#info_casa_selecionada").innerText = (casa_selecionada);
+
+		// try {
+		// 	peca_selecionada = document.querySelector("#"+casa_selecionada).querySelector("img").id;
+		// } catch {
+		// 	peca_selecionada = "NENHUMA PECA SELECIONADA"
+		// }
+		// document.querySelector("#info_peca_selecionada").innerText = (peca_selecionada.toString());
+	}));
+
+	document.querySelectorAll(".casa").forEach( e => e.addEventListener("click", clickCasa));
+	document.querySelectorAll(".casa").forEach( e => e.addEventListener("dragstart", clickCasa));
+	// document.querySelectorAll(".casa").forEach( e => e.addEventListener("dragover", e.classList.add('casahover')));
+	document.querySelectorAll(".casa").forEach( e => e.addEventListener("dragenter", (e)=> { e.target.style.opacity = 0.5 }) );
+	document.querySelectorAll(".casa").forEach( e => e.addEventListener("dragleave", (e)=> { e.target.style.opacity = 1 }) );
+	document.querySelectorAll(".casa").forEach( e => e.addEventListener("dragover", (e)=> { e.preventDefault() }) );
+	document.querySelectorAll(".casa").forEach( e => e.addEventListener("drop", clickCasa) );
+	// document.querySelectorAll(".casa").forEach( e => e.addEventListener("dragend", e.click));
+}
+
+</script>
