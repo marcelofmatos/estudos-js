@@ -7,7 +7,7 @@ module.exports = (page, cb) => {
 		await page.type('#CampoA', '144');
 		await page.type('#CampoB', '12');
 		await page.click('.caixa button:nth-child(4)');
-		await page.$eval('#Resultado', (el, value) => el.value = value, '12');
+		await page.$eval('#Resultado', (element, value) => element.value = value, '12');
 		cb();
 	})();
 };
