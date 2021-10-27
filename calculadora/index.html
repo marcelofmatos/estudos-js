@@ -49,6 +49,12 @@
                 <button onclick="divide()">
                     <span>➗</span> Divide
                 </button>
+                <button onclick="porcentagem()">
+                    <span>%</span> Porc
+                </button>
+                <button onclick="RaizQuadrada()">
+                    <span>2√x</span> RQ
+                </button>
             </p>
             <label>Resultado: <input id="Resultado" /></label>
         </div>
@@ -76,6 +82,15 @@
                 A = parseInt(CampoA.value)
                 B = parseInt(CampoB.value)
                 Resultado.value = A / B
+            }
+            function porcentagem() {
+                A = parseInt(CampoA.value)
+                B = parseInt(CampoB.value)
+                Resultado.value = A * B/100
+            }
+            function RaizQuadrada(no) {
+                A = parseInt(CampoA.value)
+                  Resultado.value =  Math.sqrt(A)
             }
         </script>
         Minha modificação aqui
